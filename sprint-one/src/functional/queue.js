@@ -1,6 +1,6 @@
 var Queue = function(){
-  var someInstance = {};
 
+  var someInstance = {};
   var firstEntry = 0;
   var lastEntry = -1;
 
@@ -34,6 +34,7 @@ var Queue = function(){
   };
   return someInstance;
 };
+
 
 
 
