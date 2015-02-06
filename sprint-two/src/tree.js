@@ -1,10 +1,15 @@
+var extend = function(to, from) {
+  for (var key in from) {
+    to[key] = from[key];
+  }
+};
+
+
 var Tree = function(value){
-  var newTree = Object.create(treeMethods);
+  var newTree = {};
   newTree.value = value;
-
-  // your code here
   newTree.children = [];
-
+  extend(newTree, treeMethods);
   return newTree;
 };
 
