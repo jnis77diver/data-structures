@@ -15,8 +15,8 @@ var Stack = function() {
 
 var stackMethods = {};
 
-stackMethods.push = function (input) {
-  this[this.counter] = input;
+stackMethods.push = function (value) {
+  this[this.counter] = value;
   this.counter++;
 };
 

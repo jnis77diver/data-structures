@@ -8,17 +8,14 @@ var Queue = function(){
   var someInstance = {};
   someInstance.firstIndex = 0;
   someInstance.lastIndex = -1;
-  // Hey! Rewrite in the new style. Your code will wind up looking very similar,
-  // but try not not reference your old code in writing the new style.
   extend(someInstance, queueMethods);
   return someInstance;
 };
 
 var queueMethods = {};
 
-queueMethods.enqueue = function(inputStr) {
-  this.lastIndex++;
-  this[this.lastIndex] = inputStr;
+queueMethods.enqueue = function(value) {
+  this[++this.lastIndex] = value;
 };
 
 queueMethods.dequeue = function() {

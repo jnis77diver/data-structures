@@ -3,8 +3,8 @@ var Stack = function() {
 };
 
 
-Stack.prototype.push = function( val ){
-  this[this.counter++] = val;
+Stack.prototype.push = function( value ){
+  this[this.counter++] = value;
 };
 
 Stack.prototype.pop = function(){

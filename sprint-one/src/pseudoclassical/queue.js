@@ -3,8 +3,8 @@ var Queue = function() {
   this.lastIndex = -1;
 };
 
-Queue.prototype.enqueue = function(val) {
-  this[++this.lastIndex] = val;
+Queue.prototype.enqueue = function(value) {
+  this[++this.lastIndex] = value;
 };
 
 Queue.prototype.dequeue = function() {

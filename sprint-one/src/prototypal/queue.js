@@ -1,15 +1,14 @@
 var Queue = function() {
-  var newQueue = Object.create(queueMethods);
-  newQueue.firstIndex = 0;
-  newQueue.lastIndex = -1;
-  return newQueue;
+  var someInstance = Object.create(queueMethods);
+  someInstance.firstIndex = 0;
+  someInstance.lastIndex = -1;
+  return someInstance;
 };
 
 queueMethods = {};
 
-queueMethods.enqueue = function( input ){
-  this.lastIndex++;
-  this[this.lastIndex] = input;
+queueMethods.enqueue = function(value){
+  this[++this.lastIndex] = value;
 };
 
 queueMethods.dequeue = function(){
