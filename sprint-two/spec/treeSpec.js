@@ -41,4 +41,45 @@ describe('tree', function() {
     expect(tree.contains(8)).to.equal(true);
   });
 
+  it('should have methods named "remove"', function() {
+    expect(tree.remove).to.be.a("function");
+  });
+
+  it('should be able to remove a value', function() {
+    tree.addChild(5);
+    tree.children[0].addChild(6);
+    tree.remove(6);
+    expect(tree.contains(6)).to.equal(false);
+  });
+
+  it('should correctly delete a branch without deleting its children', function(){
+    tree.addChild(5);
+    tree.addChild(6);
+    tree.children[0].addChild(7);
+    tree.children[1].addChild(8);
+    tree.remove(5);
+    expect(tree.contains(5)).to.equal(false);
+    expect(tree.contains(8)).to.equal(true);
+    expect(tree.contains(7)).to.equal(true);
+  });
+
+  it('should remove duplicate entries', function(){
+    tree.addChild(7);
+    tree.addChild(10);
+    tree.addChild(3);
+    tree.children[0].addChild(7);
+    tree.children[1].addChild(8);
+    tree.children[2].addChild(7);
+    tree.children[0].children[0].addChild(12);
+    tree.children[1].children[0].addChild(8);
+    tree.children[2].children[0].addChild(5);
+    tree.children[0].children[0].children[0].addChild(21);
+    tree.remove(8);
+    tree.remove(7);
+    expect(tree.contains(7)).to.equal(false);
+    expect(tree.contains(8)).to.equal(false);
+  });
+
+
+
 });

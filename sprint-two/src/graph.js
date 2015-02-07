@@ -64,7 +64,6 @@ Graph.prototype.getNode = function(value) {
 
 
 var Node1 = function(value){
-  console.log("This is in the graph.js")
   var node = {};
   node.value = value;
   node.connections = [];
