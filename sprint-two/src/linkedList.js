@@ -11,7 +11,6 @@ var LinkedList = function(){
       list.head = newNode;
     }
     list.tail = newNode;
-    console.log(4444,value,newNode)
   };
 
   list.removeHead = function(){
@@ -25,7 +24,6 @@ var LinkedList = function(){
     //if we get to list.tail and no value found, doesn't exit in ll
     //return undefined
     for( var iterate = list.head; iterate !== null; iterate = iterate.next ) {
-      console.log(1234,iterate);
       if( iterate.value === target ) {
         return true;
       }
@@ -38,9 +36,7 @@ var LinkedList = function(){
 
 var Node = function(value){
   var node = {};
-
   node.value = value;
   node.next = null;
-
   return node;
 };

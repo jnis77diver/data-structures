@@ -5,7 +5,7 @@ var Graph = function( val ){
 };
 
 Graph.prototype.addNode = function( value ){
-  var newNode = new Node(value);
+  var newNode = new Node1(value);
   this.nodes.push(newNode);
 };
 
@@ -63,7 +63,8 @@ Graph.prototype.getNode = function(value) {
 }
 
 
-var Node = function(value){
+var Node1 = function(value){
+  console.log("This is in the graph.js")
   var node = {};
   node.value = value;
   node.connections = [];
