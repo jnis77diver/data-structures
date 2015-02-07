@@ -34,7 +34,31 @@ describe('binarySearchTree', function() {
     binarySearchTree.insert(2);
     binarySearchTree.insert(3);
     binarySearchTree.depthFirstLog(func);
-    console.log(array);
     expect(array).to.eql([5,2,3]);
   });
+
+  it('should have methods named "remove"', function() {
+    expect(binarySearchTree.remove).to.be.a("function");
+  });
+
+  it('should be able to remove a value', function() {
+    binarySearchTree.insert(5);
+    binarySearchTree.insert(6);
+    expect(binarySearchTree.remove(6)).to.equal(6);
+    expect(binarySearchTree.contains(6)).to.equal(false);
+  });
+
+  it('should correctly delete a branch without deleting its children', function(){
+    binarySearchTree.insert(5);
+    binarySearchTree.insert(6);
+    binarySearchTree.insert(7);
+    binarySearchTree.insert(8);
+    expect(binarySearchTree.remove(5)).to.equal(5);
+    expect(binarySearchTree.contains(8)).to.equal(true);
+    expect(binarySearchTree.contains(7)).to.equal(true);
+  });
+
+
+
+
 });
