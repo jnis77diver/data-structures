@@ -6,162 +6,138 @@ var extend = function(to, from) {
 
 
 var BinarySearchTree = function(value){
-  var newTree = {};
-  newTree.value = value;
-  newTree.right = null;
-  newTree.left = null;
+  var newTree    = {};
+  newTree.value  = value;
+  newTree.parent = null;
+  newTree.right  = null;
+  newTree.left   = null;
   extend(newTree, binaryTreeMethods);
   return newTree;
 };
 
 var binaryTreeMethods = {};
 
-binaryTreeMethods.insert = function(value){
-  var newBranch = BinarySearchTree(value);
-  var parent = this.whereShouldParentBe(this, value);
-  if ( value > parent.value ){
-    parent.right = newBranch;
-  } else{
-    parent.left = newBranch;
+binaryTreeMethods.insert = function( value, newBranch ){
+  if (!newBranch){ newBranch = BinarySearchTree( value ); }
+  var parent = this;
+  for ( var iterator = this; ; ){
+    if ( !iterator ){
+      break;
+    }
+    parent = iterator;
+    iterator = parent[iterator.getDirection( newBranch )];
   }
+  parent[ parent.getDirection(newBranch) ] = newBranch;
+  newBranch.parent = parent;
 };
 
-binaryTreeMethods.contains = function(val, branch){
-  // We should have used a callback function and depthFirstLog
-  var child;
-  if (branch === null){
-    return false;
+binaryTreeMethods.contains = function( val ){
+  var found = false;
+  this.depthFirstLog(function( value ){
+    if ( value === val ){
+      found = true;
+    }
+  });
+  return found;
+};
+
+binaryTreeMethods.remove = function( val ){
+  // Revmoes a node from the tree
+  // find node to remove and node to replace
+  removeNode = this.getNode( val );
+  replacementNode = this.getReplacement( removeNode );
+  // set the parents subranch so that it now points to replacement
+  // If removeNode.parent is null then we are dealing with the head.
+  if (removeNode.parent && removeNode.parent.right === removeNode){
+    removeNode.parent.right = replacementNode;
+  } else if (removeNode.parent){
+    removeNode.parent.left = replacementNode;
   }
-  if (branch === undefined){
-    branch = this;
-  }
-  if (branch.value === val){
-    return true;
-  } else{
-    if ( branch.value < val ){
-      child = branch.right;
+  // As long is there is a valid replacement - if !replacement node then the node to remove has no children
+  if (replacementNode){
+    // the orphaned branch is orphaned when we remove replacement node. It will need to be reinserted
+    var orphanBranch = replacementNode.right ? replacementNode.right : replacementNode.left;
+    // delete replacement node by deleteing the reference from its parent
+    if (replacementNode.parent.right === replacementNode){
+      replacementNode.parent.right = null;
     } else{
-      child = branch.left;
+      replacementNode.parent.left = null;
     }
-    return this.contains(val, child);
+    // set replacements nodes references to equal the old node
+    replacementNode.right  = removeNode.right;
+    replacementNode.left   = removeNode.left;
+    replacementNode.parent = removeNode.parent;
+    // reinsert orphan branch
+    this.insert( null, orphanBranch);
   }
 };
 
-
-binaryTreeMethods.remove = function(val){
-  var parent = this.getParentRemove(val);
-  var target;
-  var temp;
-  var replacement;
-  var repsParent;
-  if( parent.right !== null && parent.right.value === val ) {
-    target = parent.right;
-    temp = "right";
-  } else {
-    target = parent.left;
-    temp = "left";
-  }
-  //get replacement node
-  if (target.right !== null) {
-    replacement = target.right._getMin();
-    repsParent = this.getParentRemove(replacement.value);
-    repsParent.left = replacement.right;
-    replacement.right = target.right;
-    replacement.left = target.left;
-    parent[temp] = replacement;
-  } else if( target.left !== null ){
-    replacement = target.left._getMax();
-    repsParent = this.whereShouldParentBe(target, replacement.value);
-    repsParent.right = replacement.left;
-    replacement.left = target.left;
-    parent[temp] = replacement;
-  } else {
-    parent[temp] = null;
+binaryTreeMethods.getDirection = function( newBranch ){
+  // compares the value of the branch that was called on to the branch that was input.
+  // Returns a direction
+  if ( newBranch.value > this.value ){
+    return "right";
+  } else if ( newBranch.value < this.value ){
+    return "left";
   }
 };
 
-binaryTreeMethods.getParentRemove = function(val) {
-  var target;
-  var func = function( node ){
-    if ((node.right !== null && node.right.value === val) ||
-       (node.left  !== null && node.left.value  === val)) {
-      target = node;
+binaryTreeMethods.getNode = function( val ){
+  // finds a node with a given value
+  var targetNode;
+  this.recursiveCall(function(node){
+    if ( node.value === val ){
+      targetNode = node;
     }
-  };
-  this.orderedCountHelper(func);
-  return target;
+  });
+  return targetNode;
 };
 
-
-binaryTreeMethods.orderedCountCheck = function(arrayToCheck) {
-  var treeNums = [];
-  this.orderedCountHelper(function(node) {
-    treeNums.push(node.value);
-  }, this);
-  for(var i = 0; i < treeNums.length; i++ ) {
-    if( treeNums[i] !== arrayToCheck[i] ) {
-      return false;
-    }
+binaryTreeMethods.getReplacement = function( node ){
+  // Method to find the replacement for a given node. Will look for the maximum of left subbranch.
+  // If .left == null then look for minimum of right subbranch. Otherwise return false;
+  if ( node.left ){
+    return node.left._getMax();
+  } else if ( node.right ){
+    return node.right._getMin();
   }
-  if( treeNums.length !== arrayToCheck.length ) {
-    return false;
-  }
-  return true;
+  return null;
 };
 
-binaryTreeMethods.orderedCountHelper = function(func, branch) {
-  if( branch === null ) {
+binaryTreeMethods.depthFirstLog = function( func ){
+  // method needed for the specs. Recursivecall can iterate over both branches and value.
+  // All this does is call recursiveCall
+  this.recursiveCall( func , true );
+};
+
+binaryTreeMethods.recursiveCall = function( func , valBool){
+  // recursive method which will apply func to all elements on the tree
+  // val is a boolean that will give .value for each branch as input rather than the branch
+  if ( !this ){
     return null;
-  } else if ( branch === undefined ) {
-    branch = this;
   }
-  this.orderedCountHelper(func, branch.left);
-  func(branch);
-  this.orderedCountHelper(func, branch.right);
-};
-
-binaryTreeMethods.whereShouldParentBe = function(branch, val){
-  var child;
-  if (branch.value < val){
-    child = branch.right;
-  } else {
-    child = branch.left;
+  if (valBool){
+    func(this.value);
+  } else{
+    func(this);
   }
-  if( child === null ){
-    return branch;
-  } else {
-    return branch.whereShouldParentBe(child, val);
-  }
-};
-
-binaryTreeMethods._print = function(branch){
-  this.depthFirstLog(console.log);
-};
-
-binaryTreeMethods.depthFirstLog = function(func, branch){
-  if( branch === null ) {
-    return null;
-  } else if ( branch === undefined ) {
-    branch = this;
-  }
-  func(branch.value);
-  this.depthFirstLog(func, branch.left);
-  this.depthFirstLog(func, branch.right);
+  if ( this.right ){ this.right.recursiveCall( func, valBool ); }
+  if ( this.left ){ this.left.recursiveCall( func, valBool ); }
 };
 
 binaryTreeMethods._getMax = function() {
-  if( this.right === null ) {
+  // finds the max for the tree it was called on recursivly
+  if( !this.right ) {
     return this;
-  } else {
-    return this.right._getMax();
   }
+  return this.right._getMax();
 };
 
 
 binaryTreeMethods._getMin = function() {
-  for (var branch = this; branch.left !== null; branch = branch.left ) {
-    // empty on purpose. Iterating through the branches to get to min
+  // finds the min for the tree it was called on
+  if( !this.left ) {
+    return this;
   }
-  return branch;
+  return this.left._getMin();
 };
-
