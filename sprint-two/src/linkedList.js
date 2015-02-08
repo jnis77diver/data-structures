@@ -21,8 +21,6 @@ var LinkedList = function(){
   };
 
   list.contains = function(target){
-    //if we get to list.tail and no value found, doesn't exit in ll
-    //return undefined
     for( var iterate = list.head; iterate !== null; iterate = iterate.next ) {
       if( iterate.value === target ) {
         return true;

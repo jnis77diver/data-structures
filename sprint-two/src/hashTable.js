@@ -1,16 +1,3 @@
-// This is a "hashing function". You don't need to worry about it, just use it
-// to turn any string into an integer that is well-distributed between the
-// numbers 0 and `max`
-var getIndexBelowMaxForKey = function(str, max){
-  var hash = 0;
-  for (var i = 0; i < str.length; i++) {
-    hash = (hash<<5) + hash + str.charCodeAt(i);
-    hash = hash & hash; // Convert to 32bit integer
-    hash = Math.abs(hash);
-  }
-  return hash % max;
-};
-
 var HashTable = function(){
   this._limit = 8;
   this._storage = LimitedArray(this._limit);
@@ -22,8 +9,17 @@ HashTable.prototype.insert = function(k, v){
   if( !valueAtIndex ) {
     this._storage.set(i, [[k, v]]);
   } else {
-    valueAtIndex.push([k,v]);
-    this._storage.set(i, valueAtIndex);
+    var found = false;
+    for (var j = 0; j < valueAtIndex.length; j++) {
+      var tuple = valueAtIndex[j];
+      if( tuple[0] === k ) {
+        tuple[1] = v;
+        found = true;
+      }
+    }
+    if( !found ) {
+      valueAtIndex.push([k,v]);
+    }
   }
 };
 
@@ -47,14 +43,13 @@ HashTable.prototype.remove = function(k){
   //set up a var and then get the value at i
   var valueAtIndex = this._storage.get(i);
   //check if undefined
-  if( valueAtIndex === undefined ) {
+  if( !valueAtIndex ) {
     return null;
   } else {
     for( var j = 0; j < valueAtIndex.length; j++ ) {
       if( valueAtIndex[j][0] === k ) {
         var val = valueAtIndex[j];
-        var temp = j === 0? 1: j;
-        valueAtIndex.splice(j, temp);
+        valueAtIndex.splice(j, 1);
         this._storage.set(i, valueAtIndex);
         return val;
       }

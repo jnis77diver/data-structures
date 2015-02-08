@@ -15,10 +15,7 @@ Graph.prototype.contains = function( value ){
 
 Graph.prototype.removeNode = function( value ){
   var index = this.getNodeIndex(value);
-  if (index === 0){
-    this.nodes.splice(0,1);
-  }
-  this.nodes.splice(index, index);
+  this.nodes.splice(index, 1);
 };
 
 Graph.prototype.hasEdge = function(fromValue, toValue){
@@ -39,8 +36,8 @@ Graph.prototype.removeEdge = function(fromValue, toValue){
   var node2 = this.getNode( toValue );
   var node1ConIndex = node1.connections.indexOf(node2);
   var node2ConIndex = node2.connections.indexOf(node1);
-  node1.connections.splice(node1ConIndex);
-  node2.connections.splice(node2ConIndex);
+  node1.connections.splice(node1ConIndex,1);
+  node2.connections.splice(node2ConIndex,1);
 };
 
 Graph.prototype.forEachNode = function(func){
@@ -60,7 +57,7 @@ Graph.prototype.getNodeIndex = function(value) {
 
 Graph.prototype.getNode = function(value) {
   return this.nodes[this.getNodeIndex( value )];
-}
+};
 
 
 var Node1 = function(value){

@@ -26,58 +26,51 @@ treeMethods.addChild = function(value){
 treeMethods.contains = function(target){
   if ( this.value === target) {
     return true;
-  };
+  }
   for (var i = 0; i < this.children.length; i++){
     if ( this.children[i].contains(target) ){
       return true;
     }
-  };
+  }
   return false;
 };
 
 treeMethods.remove = function(target){
   for (var i = 0; i < this.children.length; i++){
+      // recursive call
       this.children[i].remove(target);
   }
   if ( this.value === target) {
+    // if the value is found get reference to parent and children - named for clarity
     var par = this.parent;
     var childs = this.children;
+    // check to see if we are at the head
     if( par !== null ){
+      // find target nodes index within parent's children array
       var index = par.children.indexOf(this);
-      var temp = index === 0? 1: temp;
-      console.log("index", index, "temp ", temp, "par.chl ", par.children);
-      par.children.splice(index, temp);
-      console.log("par.children after is ", par.children);
+      // splice out node
+      par.children.splice(index, 1);
     }
+    // find the child to replace the target nodes only excecute if target node had children
     var newMe = childs[0];
-    if ( newMe != undefined ){
+    if ( newMe !== undefined ){
+      // set its parent
       newMe.parent = par;
+      // take the replacement node out of targets children array
       childs.splice(0,1);
+      // add replacement node to parents children array
       par.children.push(newMe);
-      for (var i = 0; i < childs.length; i++){
-        childs[i].parent = newMe;
+      // set the new parent of targets remaining children
+      for (var j = 0; j < childs.length; j++){
+        childs[j].parent = newMe;
       }
+      // merger replacement's children with orphans children
       newMe.children.concat(childs);
     }
   }
 };
 
-tree = Tree(1);
-tree.addChild(2);
-tree.children[0].addChild(3);
-tree.remove(3);
-console.log(tree.contains(3));
 
-        // var temp = j === 0? 1: j;
-        // valueAtIndex.splice(j, temp);
-
-
-//       7
-//     4   8
-//    3 6
-//       4
-//
-//
 
 
 

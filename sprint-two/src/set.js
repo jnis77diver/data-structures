@@ -16,11 +16,7 @@ setPrototype.contains = function(item){
 
 setPrototype.remove = function(item){
   var index = this._storage.indexOf(item);
-  if( index === 0 ){
-    this._storage.splice(0, 1);
-  } else {
-    this._storage.splice(index, index);
-  }
+  this._storage.splice(index, 1);
 };
 
 /*

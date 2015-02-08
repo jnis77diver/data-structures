@@ -18,7 +18,7 @@ var binaryTreeMethods = {};
 
 binaryTreeMethods.insert = function(value){
   var newBranch = BinarySearchTree(value);
-  var parent = this.getParent(this, value);
+  var parent = this.whereShouldParentBe(this, value);
   if ( value > parent.value ){
     parent.right = newBranch;
   } else{
@@ -26,21 +26,8 @@ binaryTreeMethods.insert = function(value){
   }
 };
 
-binaryTreeMethods.getParent = function(branch, val){
-  var child;
-  if (branch.value < val){
-    child = branch.right;
-  } else {
-    child = branch.left;
-  }
-  if( child === null ){
-    return branch;
-  } else {
-    return branch.getParent(child, val);
-  }
-};
-
 binaryTreeMethods.contains = function(val, branch){
+  // We should have used a callback function and depthFirstLog
   var child;
   if (branch === null){
     return false;
@@ -61,7 +48,93 @@ binaryTreeMethods.contains = function(val, branch){
 };
 
 
-binaryTreeMethods.print = function(branch){
+binaryTreeMethods.remove = function(val){
+  var parent = this.getParentRemove(val);
+  var target;
+  var temp;
+  var replacement;
+  var repsParent;
+  if( parent.right !== null && parent.right.value === val ) {
+    target = parent.right;
+    temp = "right";
+  } else {
+    target = parent.left;
+    temp = "left";
+  }
+  //get replacement node
+  if (target.right !== null) {
+    replacement = target.right._getMin();
+    repsParent = this.getParentRemove(replacement.value);
+    repsParent.left = replacement.right;
+    replacement.right = target.right;
+    replacement.left = target.left;
+    parent[temp] = replacement;
+  } else if( target.left !== null ){
+    replacement = target.left._getMax();
+    repsParent = this.whereShouldParentBe(target, replacement.value);
+    repsParent.right = replacement.left;
+    replacement.left = target.left;
+    parent[temp] = replacement;
+  } else {
+    parent[temp] = null;
+  }
+};
+
+binaryTreeMethods.getParentRemove = function(val) {
+  var target;
+  var func = function( node ){
+    if ((node.right !== null && node.right.value === val) ||
+       (node.left  !== null && node.left.value  === val)) {
+      target = node;
+    }
+  };
+  this.orderedCountHelper(func);
+  return target;
+};
+
+
+binaryTreeMethods.orderedCountCheck = function(arrayToCheck) {
+  var treeNums = [];
+  this.orderedCountHelper(function(node) {
+    treeNums.push(node.value);
+  }, this);
+  for(var i = 0; i < treeNums.length; i++ ) {
+    if( treeNums[i] !== arrayToCheck[i] ) {
+      return false;
+    }
+  }
+  if( treeNums.length !== arrayToCheck.length ) {
+    return false;
+  }
+  return true;
+};
+
+binaryTreeMethods.orderedCountHelper = function(func, branch) {
+  if( branch === null ) {
+    return null;
+  } else if ( branch === undefined ) {
+    branch = this;
+  }
+  this.orderedCountHelper(func, branch.left);
+  func(branch);
+  this.orderedCountHelper(func, branch.right);
+};
+
+binaryTreeMethods.whereShouldParentBe = function(branch, val){
+  var child;
+  if (branch.value < val){
+    child = branch.right;
+  } else {
+    child = branch.left;
+  }
+  if( child === null ){
+    return branch;
+  } else {
+    return branch.whereShouldParentBe(child, val);
+  }
+};
+
+binaryTreeMethods._print = function(branch){
   this.depthFirstLog(console.log);
 };
 
@@ -75,41 +148,20 @@ binaryTreeMethods.depthFirstLog = function(func, branch){
   this.depthFirstLog(func, branch.left);
   this.depthFirstLog(func, branch.right);
 };
-/*
-binarySearchTree = BinarySearchTree(5);
-binarySearchTree.insert(2);
-binarySearchTree.insert(3);
-binarySearchTree.insert(7);
-binarySearchTree.insert(6);
-binarySearchTree.insert(8);
-binarySearchTree.print();
-*/
 
-/*dfl(cl, head(5));
-dfl(cl, branch(2));
-dfl(cl, null);
-2
-dfl(cl, branch(3));
-dfl(cl, null)
-3
-dfl(cl, null);
-5
-dfl(cl, branch(7));
-dfl(cl, branch(6));
-dfl(cl, null);
-6
-dfl(cl, null);
-7
-dfl(cl, branch(8));
-dfl(cl, null);
-8
-dfl(cl, null);*/
-/*
- * Complexity: What is the time complexity of the above functions?
- */
+binaryTreeMethods._getMax = function() {
+  if( this.right === null ) {
+    return this;
+  } else {
+    return this.right._getMax();
+  }
+};
 
 
-//      5
-//   2     7
-//    3   6 8
-//
+binaryTreeMethods._getMin = function() {
+  for (var branch = this; branch.left !== null; branch = branch.left ) {
+    // empty on purpose. Iterating through the branches to get to min
+  }
+  return branch;
+};
+

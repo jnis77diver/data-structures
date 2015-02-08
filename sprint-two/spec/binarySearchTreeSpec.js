@@ -44,18 +44,26 @@ describe('binarySearchTree', function() {
   it('should be able to remove a value', function() {
     binarySearchTree.insert(5);
     binarySearchTree.insert(6);
-    expect(binarySearchTree.remove(6)).to.equal(6);
+    expect(binarySearchTree.remove(6)).to.equal(undefined);
     expect(binarySearchTree.contains(6)).to.equal(false);
   });
 
-  it('should correctly delete a branch without deleting its children', function(){
+  it('should delete a node without deleting its children', function(){
     binarySearchTree.insert(5);
+    binarySearchTree.insert(4);
+    binarySearchTree.insert(2);
+    binarySearchTree.insert(3);
     binarySearchTree.insert(6);
     binarySearchTree.insert(7);
     binarySearchTree.insert(8);
-    expect(binarySearchTree.remove(5)).to.equal(5);
+    expect(binarySearchTree.remove(4)).to.equal(undefined);
     expect(binarySearchTree.contains(8)).to.equal(true);
     expect(binarySearchTree.contains(7)).to.equal(true);
+    expect(binarySearchTree.contains(6)).to.equal(true);
+    expect(binarySearchTree.contains(4)).to.equal(false);
+    expect(binarySearchTree.contains(3)).to.equal(true);
+    expect(binarySearchTree.contains(2)).to.equal(true);
+
   });
 
 
